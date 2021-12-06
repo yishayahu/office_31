@@ -12,7 +12,7 @@ for part_ratio in [0.05, 0.1, 0.2]:
     for config in sorted(os.listdir('configs'), key=lambda x: int('source' in x), reverse=True):
         exp_name = config.split('.')[0]
         config = os.path.join('configs', config)
-        if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{part_ratio}/model_final.pth')):
+        if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{part_ratio}\model_final.pth')):
             print(f'run training {exp_name}_{part_ratio} with config {config} ')
             os.system(f'python main.py --exp_name {exp_name}_{part_ratio} --config {config}')
         else:
