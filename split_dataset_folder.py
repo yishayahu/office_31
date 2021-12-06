@@ -4,9 +4,11 @@ import shutil
 
 import numpy as np
 
+import paths
+
 
 def split(part_ratio):
-    path1 = r'C:\Users\Y\PycharmProjects\domain_adaptation_images'
+    path1 = paths.data_path
     img_len = []
     for domain in os.listdir(path1):
         domain = os.path.join(path1, domain)
