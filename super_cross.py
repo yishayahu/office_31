@@ -1,9 +1,18 @@
 import os
 
-from main import main
+import paths
+from main import main, fix_seed
+from split_dataset_folder import split
 
-for config in sorted(os.listdir('configs'),key=lambda x:int('source' in  x),reverse=True):
-    exp_name = config.split('.')[0]
-    config = os.path.join('configs',config)
-    print(f'run training {exp_name} with config {config}')
-    main(f'--exp_name {exp_name} --config {config}'.split())
+fix_seed()
+for part_ratio in [0.05, 0.1, 0.2]:
+    print('spliting_data')
+    split(part_ratio=part_ratio)
+    for config in sorted(os.listdir('configs'), key=lambda x: int('source' in x), reverse=True):
+        exp_name = config.split('.')[0]
+        config = os.path.join('configs', config)
+        if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{part_ratio}/model_final.pth')):
+            print(f'run training {exp_name}_{part_ratio} with config {config}')
+            os.system('python main.py --exp_name {exp_name} --config {config}')
+        else:
+            print(f'skipping {exp_name}')

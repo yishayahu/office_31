@@ -50,28 +50,37 @@ class Trainer(object):
                                             drop_last=False)
         self.model = cfg.model
 
-        param_group = []
         if cfg.train_only_source:
+            param_group = [{'params': [], 'lr': cfg.lr}, {'params': [], 'lr': cfg.lr * 10}]
             for k, v in self.model.named_parameters():
                 if not k.__contains__('fc'):
-                    param_group += [{'params': v, 'lr': cfg.lr}]
+                    param_group[0]['params'].append(v)
                 else:
-                    param_group += [{'params': v, 'lr': cfg.lr * 10}]
+                    param_group[1]['params'].append(v)
         else:
             self.model.load_state_dict(torch.load(os.path.join(paths.pretrained_models_path, cfg.base_model_path)))
-            param_group = list(self.model.parameters())
+            param_group = [{'params': [], 'lr': cfg.lr}, {'params': [], 'lr': cfg.lr}]
+            for k, v in self.model.named_parameters():
+                if not k.__contains__('fc'):
+                    param_group[0]['params'].append(v)
+                else:
+                    param_group[1]['params'].append(v)
         self.model = self.model.to(device)
-        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum, lr=cfg.lr)
+        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum)
+        continue_optimizer = getattr(cfg, 'continue_optimizer', False)
+        if continue_optimizer:
+            self.optimizer.load_state_dict(torch.load(os.path.join(paths.pretrained_models_path, cfg.base_optim_path)))
         self.criterion = nn.CrossEntropyLoss()
 
         self.step = 0
-        # self.scheduler = torch.optim.lr_scheduler.OneCycleLR(self.optimizer, max_lr=0.01, steps_per_epoch=self.cfg.steps_per_epoch, epochs=self.cfg.num_epochs)
 
     def create_data_loaders(self):
-        source_amount = max(int(self.cfg.batch_size * (1 - self.target_ratio)), 1)
-        print(source_amount)
-        self.source_dl = torchdata.DataLoader(self.source_ds, batch_size=source_amount, shuffle=True, pin_memory=True,
-                                              drop_last=True)
+        source_amount = int(self.cfg.batch_size * (1 - self.target_ratio))
+        if source_amount >= 1:
+            self.source_dl = torchdata.DataLoader(self.source_ds, batch_size=source_amount, shuffle=True, pin_memory=True,
+                                                  drop_last=True)
+        else:
+            self.source_dl = None
         self.target_dl = torchdata.DataLoader(self.target_ds, batch_size=self.cfg.batch_size - source_amount,
                                               shuffle=True, pin_memory=True,
                                               drop_last=True)
@@ -102,7 +111,7 @@ class Trainer(object):
             while True:
                 for x in self.source_dl:
                     yield x
-        elif self.cfg.train_only_target:
+        elif self.cfg.train_only_target or self.source_dl is None:
             while True:
                 for x in self.target_dl:
                     yield x

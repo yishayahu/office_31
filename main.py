@@ -49,8 +49,8 @@ def fix_seed(seed=0xBadCafe):
 
 def main(args=None):
     cli = argparse.ArgumentParser()
-    cli.add_argument("--exp_name", default='webcam_target')
-    cli.add_argument("--config", default='configs/webcam_target.yml')
+    cli.add_argument("--exp_name", default='debug')
+    cli.add_argument("--config", default='configs/amazon_target.yml')
     cli.add_argument("--device", default='cuda:0')
     opts = cli.parse_args(args)
     fix_seed()
