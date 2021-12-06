@@ -11,6 +11,8 @@ def split(part_ratio):
     path1 = paths.data_path
     img_len = []
     for domain in os.listdir(path1):
+        if domain == 'outs':
+            continue
         domain = os.path.join(path1, domain)
         if os.path.exists(os.path.join(domain, 'train')):
             shutil.rmtree(os.path.join(domain, 'train'))
