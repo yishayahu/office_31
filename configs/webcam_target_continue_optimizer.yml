@@ -3,8 +3,8 @@ dataset_target_name: webcam
 train_only_source: False
 train_only_target: True
 continue_optimizer: True
-steps_per_epoch: 200
-num_epochs: 20
+steps_per_epoch: 250
+num_epochs: 25
 batch_size: 16
 model:
   func: resnet50
