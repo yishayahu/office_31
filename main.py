@@ -61,7 +61,7 @@ def main(args=None):
     cfg.model.fc = cfg.fc
     if cfg.train_only_source:
         test_ds, val_ds, source_ds = dataset.get_dataset(cfg.dataset_name)
-        t = trainer.Trainer(source_ds, None, val_ds, test_ds, cfg, opts.device, opts.exp_name)
+        t = trainer.Trainer(source_ds, None, val_ds, test_ds, cfg, opts.device, opts.exp_name,project_name=f'office_31_{opts.split_size}')
         t.train()
     else:
         _, _, source_ds = dataset.get_dataset(cfg.dataset_source_name)
