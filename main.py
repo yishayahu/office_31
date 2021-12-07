@@ -54,16 +54,17 @@ def main(args=None):
     cli.add_argument("--device", default='cuda:0')
     cli.add_argument("--split_size")
     opts = cli.parse_args(args)
-    assert opts.split_size is not None
+
     fix_seed()
     cfg = Config(yaml.safe_load(open(opts.config, 'r')))
     cfg.second_round()
     cfg.model.fc = cfg.fc
     if cfg.train_only_source:
         test_ds, val_ds, source_ds = dataset.get_dataset(cfg.dataset_name)
-        t = trainer.Trainer(source_ds, None, val_ds, test_ds, cfg, opts.device, opts.exp_name,project_name=f'office_31_{opts.split_size}')
+        t = trainer.Trainer(source_ds, None, val_ds, test_ds, cfg, opts.device, opts.exp_name,project_name=f'office_31')
         t.train()
     else:
+        assert opts.split_size is not None
         _, _, source_ds = dataset.get_dataset(cfg.dataset_source_name)
         target_ds, val_ds, test_ds = dataset.get_dataset(cfg.dataset_target_name)
         t = trainer.Trainer(source_ds, target_ds, val_ds, test_ds, cfg, opts.device, opts.exp_name,
