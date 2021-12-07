@@ -22,11 +22,8 @@ class Trainer(object):
         self.res_dir = os.path.join(paths.out_path, exp_name)
         Path(self.ckpt_dir).mkdir(parents=True, exist_ok=True)
         Path(self.res_dir).mkdir(parents=True, exist_ok=True)
-        wandb.init(
-            project=project_name,
-            id=wandb.util.generate_id(),
-            name=exp_name,
-        )
+        self.step = 0
+
         self.device = device
         self.source_ds = source_ds
         self.target_ds = target_ds
@@ -74,8 +71,12 @@ class Trainer(object):
                 for i in range(len(self.optimizer.param_groups)):
                     self.optimizer.param_groups[i][k] = v
         self.criterion = nn.CrossEntropyLoss()
+        wandb.init(
+            project=project_name,
+            id=wandb.util.generate_id(),
+            name=exp_name,
+        )
 
-        self.step = 0
 
     def create_data_loaders(self):
         keep_source =getattr(self.cfg, 'keep_source', False)

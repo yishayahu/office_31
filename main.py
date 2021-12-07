@@ -54,6 +54,7 @@ def main(args=None):
     cli.add_argument("--device", default='cuda:0')
     cli.add_argument("--split_size")
     opts = cli.parse_args(args)
+    assert opts.split_size is not None
     fix_seed()
     cfg = Config(yaml.safe_load(open(opts.config, 'r')))
     cfg.second_round()
