@@ -20,6 +20,6 @@ for part_ratio in [0.05, 0.1, 0.2]:
                 continue
         if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{part_ratio}/model_final.pth')):
             print(f'run training {exp_name}_{part_ratio} with config {config}')
-            os.system(f'python main.py --exp_name {exp_name}_{part_ratio} --config {config}')
+            os.system(f'python main.py --exp_name {exp_name}_{part_ratio} --config {config} --split_size {part_ratio}')
         else:
             print(f'skipping {exp_name}')

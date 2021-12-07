@@ -52,6 +52,7 @@ def main(args=None):
     cli.add_argument("--exp_name", default='debug')
     cli.add_argument("--config", default='configs/amazon_target.yml')
     cli.add_argument("--device", default='cuda:0')
+    cli.add_argument("--split_size")
     opts = cli.parse_args(args)
     fix_seed()
     cfg = Config(yaml.safe_load(open(opts.config, 'r')))
@@ -64,7 +65,8 @@ def main(args=None):
     else:
         _, _, source_ds = dataset.get_dataset(cfg.dataset_source_name)
         target_ds, val_ds, test_ds = dataset.get_dataset(cfg.dataset_target_name)
-        t = trainer.Trainer(source_ds, target_ds, val_ds, test_ds, cfg, opts.device, opts.exp_name)
+        t = trainer.Trainer(source_ds, target_ds, val_ds, test_ds, cfg, opts.device, opts.exp_name,
+                            project_name=f'office_31_{opts.split_size}')
         t.train()
 
 

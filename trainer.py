@@ -12,7 +12,7 @@ import paths
 
 
 class Trainer(object):
-    def __init__(self, source_ds, target_ds, val_ds, test_ds, cfg, device, exp_name):
+    def __init__(self, source_ds, target_ds, val_ds, test_ds, cfg, device, exp_name,project_name):
         print(f'source_ds len {len(source_ds)}')
         print(f'val_ds len {len(val_ds)}')
         print(f'test_ds len {len(test_ds)}')
@@ -23,7 +23,7 @@ class Trainer(object):
         Path(self.ckpt_dir).mkdir(parents=True, exist_ok=True)
         Path(self.res_dir).mkdir(parents=True, exist_ok=True)
         wandb.init(
-            project=f"office_31",
+            project=project_name,
             id=wandb.util.generate_id(),
             name=exp_name,
         )
@@ -70,17 +70,25 @@ class Trainer(object):
         continue_optimizer = getattr(cfg, 'continue_optimizer', False)
         if continue_optimizer:
             self.optimizer.load_state_dict(torch.load(os.path.join(paths.pretrained_models_path, cfg.base_optim_path)))
+            for k, v in self.optimizer.defaults.items():
+                for i in range(len(self.optimizer.param_groups)):
+                    self.optimizer.param_groups[i][k] = v
         self.criterion = nn.CrossEntropyLoss()
 
         self.step = 0
 
     def create_data_loaders(self):
+        keep_source =getattr(self.cfg, 'keep_source', False)
         source_amount = int(self.cfg.batch_size * (1 - self.target_ratio))
+        if keep_source and source_amount<1:
+            source_amount = 1
         if source_amount >= 1:
-            self.source_dl = torchdata.DataLoader(self.source_ds, batch_size=source_amount, shuffle=True, pin_memory=True,
+            self.source_dl = torchdata.DataLoader(self.source_ds, batch_size=source_amount, shuffle=True,
+                                                  pin_memory=True,
                                                   drop_last=True)
         else:
             self.source_dl = None
+        wandb.log({'source amount': source_amount},step=self.step)
         self.target_dl = torchdata.DataLoader(self.target_ds, batch_size=self.cfg.batch_size - source_amount,
                                               shuffle=True, pin_memory=True,
                                               drop_last=True)
@@ -191,6 +199,6 @@ class Trainer(object):
             epoch_acc_val = self.run_val(self.val_dl, 'val')
             if epoch_acc_val > best_acc:
                 best_acc = epoch_acc_val
-                self.save_all(best='best')
+                # self.save_all(best='best')
         self.run_val(self.test_dl, 'test')
         self.save_all(best='_final')
