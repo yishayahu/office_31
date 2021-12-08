@@ -38,7 +38,8 @@ def split(part_ratio):
                 shutil.copy(img.path, os.path.join(domain, f'val_{part_ratio_name}', class1, img.name))
             for img in images[2 * part_len:]:
                 shutil.copy(img.path, os.path.join(domain, f'test_{part_ratio_name}', class1, img.name))
+if __name__ == '__main__':
 
-split(0.05)
-split(0.1)
-split(0.2)
+    split(0.05)
+    split(0.1)
+    split(0.2)
