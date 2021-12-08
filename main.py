@@ -60,13 +60,13 @@ def main(args=None):
     cfg.second_round()
     cfg.model.fc = cfg.fc
     if cfg.train_only_source:
-        test_ds, val_ds, source_ds = dataset.get_dataset(cfg.dataset_name)
+        test_ds, val_ds, source_ds = dataset.get_dataset(cfg.dataset_name,split_size=5)
         t = trainer.Trainer(source_ds, None, val_ds, test_ds, cfg, opts.device, opts.exp_name,project_name=f'office_31')
         t.train()
     else:
         assert opts.split_size is not None
-        _, _, source_ds = dataset.get_dataset(cfg.dataset_source_name)
-        target_ds, val_ds, test_ds = dataset.get_dataset(cfg.dataset_target_name)
+        _, _, source_ds = dataset.get_dataset(cfg.dataset_source_name,split_size=opts.split_size)
+        target_ds, val_ds, test_ds = dataset.get_dataset(cfg.dataset_target_name,split_size=opts.split_size)
         t = trainer.Trainer(source_ds, target_ds, val_ds, test_ds, cfg, opts.device, opts.exp_name,
                             project_name=f'office_31_{opts.split_size}')
         t.train()

@@ -7,7 +7,6 @@ from split_dataset_folder import split
 fix_seed()
 for part_ratio in [0.05, 0.1, 0.2]:
     print('spliting_data')
-    split(part_ratio=part_ratio)
     part_ratio = str(part_ratio).split('.')[1]
     exps = ['webcam_source.yml', 'webcam_target.yml',
             'webcam_target_base.yml', 'webcam_target_continue_optimizer.yml',

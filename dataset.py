@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 import paths
 
 
-def get_dataset(dataset_name, path=paths.data_path):
+def get_dataset(dataset_name,split_size, path=paths.data_path):
     if dataset_name in ['amazon', 'webcam']:  # OFFICE-31
         data_transforms = {
             'train': transforms.Compose([
@@ -25,9 +25,9 @@ def get_dataset(dataset_name, path=paths.data_path):
             ]),
         }
 
-        small_dataset = datasets.ImageFolder(os.path.join(path, dataset_name, 'train'), data_transforms['train'])
-        val_dataset = datasets.ImageFolder(os.path.join(path, dataset_name, 'val'), data_transforms['test'])
-        big_dataset = datasets.ImageFolder(os.path.join(path, dataset_name, 'test'), data_transforms['test'])
+        small_dataset = datasets.ImageFolder(os.path.join(path, dataset_name, f'train_{split_size}'), data_transforms['train'])
+        val_dataset = datasets.ImageFolder(os.path.join(path, dataset_name, f'val_{split_size}'), data_transforms['test'])
+        big_dataset = datasets.ImageFolder(os.path.join(path, dataset_name, f'test_{split_size}'), data_transforms['test'])
 
 
 
