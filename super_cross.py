@@ -1,10 +1,15 @@
 import os
+from multiprocessing import Process
+
+from tqdm import tqdm
 
 import paths
 from main import fix_seed
 from split_dataset_folder import split
 
 fix_seed()
+curr_device = 0
+pp = []
 for part_ratio in [0.05, 0.1, 0.2]:
     print('spliting_data')
     part_ratio = str(part_ratio).split('.')[1]
@@ -24,9 +29,17 @@ for part_ratio in [0.05, 0.1, 0.2]:
             else:
                 continue
         if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{part_ratio}/model_final.pth')):
+            if curr_device>3:
+                for p1 in tqdm(pp,desc='pp wait'):
+                    p1.join()
+                curr_device = 0
+                pp = []
+
             print(f'run training {exp_name}_{part_ratio} with config {config}')
-            cmd = f'python main.py --exp_name {exp_name}_{part_ratio} --config {config} --split_size {int(part_ratio)}'
+            cmd = f'python main.py --exp_name {exp_name}_{part_ratio} --config {config} --split_size {int(part_ratio)} --device cuda:{curr_device}'
+            curr_device += 1
             print(cmd)
-            os.system(cmd)
+            p = Process(target=lambda cmd1: os.system(cmd1[0]), args=(cmd, None))
+            pp.append(p)
         else:
             print(f'skipping {exp_name}')
