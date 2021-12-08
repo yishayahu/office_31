@@ -15,10 +15,10 @@ for part_ratio in [0.05, 0.1, 0.2]:
     print('spliting_data')
     part_ratio = str(part_ratio).split('.')[1]
     exps = ['webcam_source.yml', 'webcam_target.yml',
-            'webcam_target_base.yml', 'webcam_target_continue_optimizer.yml',
+            'webcam_target_base.yml', 'webcam_target_combined.yml',
             'webcam_target_continue_optimizer_09.yml', 'webcam_target_keep_source.yml',
             'amazon_source.yml', 'amazon_target.yml', 'amazon_target_base.yml',
-            'amazon_target_continue_optimizer.yml', 'amazon_target_continue_optimizer_09.yml',
+             'amazon_target_continue_optimizer_09.yml','amazon_target_combined.yml',
             'amazon_target_keep_source.yml']
     for config in exps:
         exp_name = config.split('.')[0]

@@ -1,8 +1,8 @@
 dataset_name: amazon
 train_only_source: True
 train_only_target: False
-steps_per_epoch: 250
-num_epochs: 25
+steps_per_epoch: 300
+num_epochs: 30
 batch_size: 16
 model:
   func: resnet50
