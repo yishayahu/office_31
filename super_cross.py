@@ -1,4 +1,5 @@
 import os
+import time
 from multiprocessing import Process
 
 from tqdm import tqdm
@@ -40,6 +41,8 @@ for part_ratio in [0.05, 0.1, 0.2]:
             curr_device += 1
             print(cmd)
             p = Process(target=lambda cmd1: os.system(cmd1[0]), args=(cmd, None))
+            p.start()
+            time.sleep(4)
             pp.append(p)
         else:
             print(f'skipping {exp_name}')
