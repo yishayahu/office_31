@@ -8,6 +8,7 @@ import paths
 
 
 def split(part_ratio):
+    part_ratio_name = int(str(part_ratio).split('.')[1])
     path1 = paths.data_path
     img_len = []
     for domain in os.listdir(path1):
@@ -15,25 +16,29 @@ def split(part_ratio):
             continue
         domain = os.path.join(path1, domain)
         if os.path.exists(os.path.join(domain, 'train')):
-            shutil.rmtree(os.path.join(domain, 'train'))
-            shutil.rmtree(os.path.join(domain, 'val'))
-            shutil.rmtree(os.path.join(domain, 'test'))
-        os.makedirs(os.path.join(domain, 'train'))
-        os.makedirs(os.path.join(domain, 'val'))
-        os.makedirs(os.path.join(domain, 'test'))
+            shutil.rmtree(os.path.join(domain, f'train_{part_ratio_name}'))
+            shutil.rmtree(os.path.join(domain, f'val_{part_ratio_name}'))
+            shutil.rmtree(os.path.join(domain, f'test_{part_ratio_name}'))
+        os.makedirs(os.path.join(domain, f'train_{part_ratio_name}'))
+        os.makedirs(os.path.join(domain, f'val_{part_ratio_name}'))
+        os.makedirs(os.path.join(domain, f'test_{part_ratio_name}'))
         for class1 in os.listdir(os.path.join(domain, 'images')):
 
-            os.makedirs(os.path.join(domain, 'train', class1))
-            os.makedirs(os.path.join(domain, 'val', class1))
-            os.makedirs(os.path.join(domain, 'test', class1))
+            os.makedirs(os.path.join(domain, f'train_{part_ratio_name}', class1))
+            os.makedirs(os.path.join(domain, f'val_{part_ratio_name}', class1))
+            os.makedirs(os.path.join(domain, f'test_{part_ratio_name}', class1))
             images = list(os.scandir(os.path.join(domain, 'images', class1)))
             img_len.append(len(images))
 
             random.shuffle(images)
             part_len = max(int(len(images) * part_ratio), 1)
             for img in images[:part_len]:
-                shutil.copy(img.path, os.path.join(domain, 'train', class1, img.name))
+                shutil.copy(img.path, os.path.join(domain, f'train_{part_ratio_name}', class1, img.name))
             for img in images[part_len:2 * part_len]:
-                shutil.copy(img.path, os.path.join(domain, 'val', class1, img.name))
+                shutil.copy(img.path, os.path.join(domain, f'val_{part_ratio_name}', class1, img.name))
             for img in images[2 * part_len:]:
-                shutil.copy(img.path, os.path.join(domain, 'test', class1, img.name))
+                shutil.copy(img.path, os.path.join(domain, f'test_{part_ratio_name}', class1, img.name))
+
+split(0.05)
+split(0.1)
+split(0.2)
