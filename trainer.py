@@ -68,7 +68,7 @@ class Trainer(object):
                 else:
                     param_group[1]['params'].append(v)
         self.model = self.model.to(device)
-        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum,lr=cfg.lr)
+        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum,lr=cfg.lr,weight_decay=getattr(cfg, 'weight_decay', 0.04))
         continue_optimizer = getattr(cfg, 'continue_optimizer', False)
         if continue_optimizer:
             self.optimizer.load_state_dict(torch.load(os.path.join(paths.pretrained_models_path, cfg.base_optim_path)))
@@ -198,9 +198,9 @@ class Trainer(object):
             if not self.cfg.train_only_source and not self.cfg.train_only_target:
                 self.target_ratio += 0.05
                 self.create_data_loaders()
-            epoch_acc_val = self.run_val(self.val_dl, 'val')
+            epoch_acc_val = self.run_val(self.test_dl, 'test')
             if epoch_acc_val > best_acc:
                 best_acc = epoch_acc_val
                 # self.save_all(best='best')
-        self.run_val(self.test_dl, 'test')
+        # self.run_val(self.test_dl, 'test')
         self.save_all(best='_final')
