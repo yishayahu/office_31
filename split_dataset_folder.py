@@ -15,10 +15,6 @@ def split(part_ratio):
         if domain == 'outs':
             continue
         domain = os.path.join(path1, domain)
-        if os.path.exists(os.path.join(domain, 'train')):
-            shutil.rmtree(os.path.join(domain, f'train_{part_ratio_name}'))
-            shutil.rmtree(os.path.join(domain, f'val_{part_ratio_name}'))
-            shutil.rmtree(os.path.join(domain, f'test_{part_ratio_name}'))
         os.makedirs(os.path.join(domain, f'train_{part_ratio_name}'))
         os.makedirs(os.path.join(domain, f'val_{part_ratio_name}'))
         os.makedirs(os.path.join(domain, f'test_{part_ratio_name}'))

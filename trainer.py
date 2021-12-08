@@ -52,6 +52,7 @@ class Trainer(object):
         self.model = cfg.model
 
         if cfg.train_only_source:
+            assert not getattr(cfg, 'continue_optimizer', False)
             param_group = [{'params': [], 'lr': cfg.lr}, {'params': [], 'lr': cfg.lr * 10}]
             for k, v in self.model.named_parameters():
                 if not k.__contains__('fc'):
@@ -67,7 +68,7 @@ class Trainer(object):
                 else:
                     param_group[1]['params'].append(v)
         self.model = self.model.to(device)
-        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum)
+        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum,lr=cfg.lr)
         continue_optimizer = getattr(cfg, 'continue_optimizer', False)
         if continue_optimizer:
             self.optimizer.load_state_dict(torch.load(os.path.join(paths.pretrained_models_path, cfg.base_optim_path)))
