@@ -40,7 +40,7 @@ for part_ratio in [0.05, 0.1, 0.2]:
             cmd = f'python main.py --exp_name {exp_name}_{part_ratio} --config {config} --split_size {int(part_ratio)} --device cuda:{curr_device}'
             curr_device += 1
             print(cmd)
-            p = Process(target=lambda cmd1: os.system(cmd1[0]), args=(cmd, None))
+            p = Process(target=lambda cmd1: os.system(cmd1), args=(cmd,))
             p.start()
             time.sleep(4)
             pp.append(p)
