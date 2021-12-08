@@ -68,7 +68,7 @@ class Trainer(object):
                 else:
                     param_group[1]['params'].append(v)
         self.model = self.model.to(device)
-        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum,lr=cfg.lr,weight_decay=getattr(cfg, 'weight_decay', 0.08))
+        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum,lr=cfg.lr,weight_decay=getattr(cfg, 'weight_decay', 0.15))
         continue_optimizer = getattr(cfg, 'continue_optimizer', False)
         if continue_optimizer:
             self.optimizer.load_state_dict(torch.load(os.path.join(paths.pretrained_models_path, cfg.base_optim_path)))
