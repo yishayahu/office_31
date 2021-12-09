@@ -52,7 +52,6 @@ def main(args=None):
     cli.add_argument("--exp_name", default='debug')
     cli.add_argument("--config", default='configs/amazon_target.yml')
     cli.add_argument("--device", default='cuda:0')
-    cli.add_argument("--split_size")
     opts = cli.parse_args(args)
 
     fix_seed()
@@ -60,15 +59,15 @@ def main(args=None):
     cfg.second_round()
     cfg.model.fc = cfg.fc
     if cfg.train_only_source:
-        test_ds, val_ds, source_ds = dataset.get_dataset(cfg.dataset_name,split_size=5)
-        t = trainer.Trainer(source_ds, None, val_ds, test_ds, cfg, opts.device, opts.exp_name,project_name=f'office_31')
+        source_train, _, test = dataset.get_dataset(cfg.dataset_name)
+        t = trainer.Trainer(source_train, None, test, test, cfg, opts.device, opts.exp_name,project_name=f'office_31_')
         t.train()
     else:
         assert opts.split_size is not None
-        _, _, source_ds = dataset.get_dataset(cfg.dataset_source_name,split_size=opts.split_size)
-        target_ds, val_ds, test_ds = dataset.get_dataset(cfg.dataset_target_name,split_size=opts.split_size)
-        t = trainer.Trainer(source_ds, target_ds, val_ds, test_ds, cfg, opts.device, opts.exp_name,
-                            project_name=f'office_31_{opts.split_size}')
+        source_train, _, _ = dataset.get_dataset(cfg.dataset_source_name)
+        _, target_train, test = dataset.get_dataset(cfg.dataset_target_name)
+        t = trainer.Trainer(source_train, target_train, test, test, cfg, opts.device, opts.exp_name,
+                            project_name=f'office_31_')
         t.train()
 
 
