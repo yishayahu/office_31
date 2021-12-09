@@ -2,6 +2,7 @@ dataset_source_name: webcam
 dataset_target_name: amazon
 train_only_source: False
 train_only_target: False
+keep_source: True
 optimizer:
   func: SGD
 lr: 0.0001

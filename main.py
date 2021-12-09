@@ -61,7 +61,10 @@ def main(args=None):
     cfg.update(base_cfg)
     cfg = Config(cfg)
     cfg.second_round()
-    cfg.model.fc = cfg.fc
+    if 'VGG' in str(type(cfg.model)):
+        cfg.model.classifier[-1] = Linear(4096,31)
+    else:
+        cfg.model.fc = cfg.fc
     if cfg.train_only_source:
         source_train, _, test = dataset.get_dataset(cfg.dataset_name)
         t = trainer.Trainer(source_train, None, test, test, cfg, opts.device, opts.exp_name, project_name=f'office_31_')
