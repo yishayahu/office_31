@@ -55,7 +55,11 @@ def main(args=None):
     opts = cli.parse_args(args)
 
     fix_seed()
-    cfg = Config(yaml.safe_load(open(opts.config, 'r')))
+    cfg = yaml.safe_load(open(opts.config, 'r'))
+
+    base_cfg = yaml.safe_load(open('configs/base_config.yml', 'r'))
+    cfg.update(base_cfg)
+    cfg = Config(cfg)
     cfg.second_round()
     cfg.model.fc = cfg.fc
     if cfg.train_only_source:

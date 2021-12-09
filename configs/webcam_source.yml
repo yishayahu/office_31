@@ -1,18 +1,6 @@
 dataset_name: webcam
 train_only_source: True
 train_only_target: False
-steps_per_epoch: 300
-num_epochs: 30
-batch_size: 16
-model:
-  func: resnet50
-  pretrained: True
-  as_class: True
-fc:
-  func: Linear
-  in_features: 2048
-  out_features: 31
-  as_class: True
 optimizer:
   func: SGD
 lr: 0.0001

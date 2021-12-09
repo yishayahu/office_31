@@ -2,19 +2,6 @@ dataset_source_name: amazon
 dataset_target_name: webcam
 train_only_source: False
 train_only_target: False
-steps_per_epoch: 300
-num_epochs: 30
-batch_size: 16
-keep_source: True
-model:
-  func: resnet50
-  pretrained: False
-  as_class: True
-fc:
-  func: Linear
-  in_features: 2048
-  out_features: 31
-  as_class: True
 optimizer:
   func: SGD
 lr: 0.0001

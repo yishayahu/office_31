@@ -3,18 +3,6 @@ dataset_target_name: amazon
 train_only_source: False
 train_only_target: False
 continue_optimizer: True
-steps_per_epoch: 250
-num_epochs: 25
-batch_size: 16
-model:
-  func: resnet50
-  pretrained: False
-  as_class: True
-fc:
-  func: Linear
-  in_features: 2048
-  out_features: 31
-  as_class: True
 optimizer:
   func: SGD
 lr: 0.0001
