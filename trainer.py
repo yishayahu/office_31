@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torch.utils.data as torchdata
 from torch import nn
+from torch.optim import Adam
 
 from tqdm import tqdm
 import wandb
@@ -12,7 +13,7 @@ import paths
 
 
 class Trainer(object):
-    def __init__(self, source_ds, target_ds, val_ds, test_ds, cfg, device, exp_name,project_name):
+    def __init__(self, source_ds, target_ds, val_ds, test_ds, cfg, device, exp_name, project_name):
         print(f'source_ds len {len(source_ds)}')
         print(f'val_ds len {len(val_ds)}')
         print(f'test_ds len {len(test_ds)}')
@@ -68,21 +69,22 @@ class Trainer(object):
                 else:
                     param_group[1]['params'].append(v)
         self.model = self.model.to(device)
-        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum,lr=cfg.lr,weight_decay=getattr(cfg, 'weight_decay', 0.08))
+
         continue_optimizer = getattr(cfg, 'continue_optimizer', False)
         if continue_optimizer:
+            self.optimizer = Adam(param_group, lr=cfg.lr, weight_decay=getattr(cfg, 'weight_decay', 0.08),betas=(0.99,0.999)) #todo: change back and add from step
             self.optimizer.load_state_dict(torch.load(os.path.join(paths.pretrained_models_path, cfg.base_optim_path)))
             for k, v in self.optimizer.defaults.items():
                 for i in range(len(self.optimizer.param_groups)):
                     self.optimizer.param_groups[i][k] = v
+        else:
+            self.optimizer = Adam(param_group, lr=cfg.lr, weight_decay=getattr(cfg, 'weight_decay', 0.08))
         self.criterion = nn.CrossEntropyLoss()
 
-
-
     def create_data_loaders(self):
-        keep_source =getattr(self.cfg, 'keep_source', False)
+        keep_source = getattr(self.cfg, 'keep_source', False)
         source_amount = int(self.cfg.batch_size * (1 - self.target_ratio))
-        if keep_source and source_amount<1:
+        if keep_source and source_amount < 1:
             source_amount = 1
         if source_amount >= 1:
             self.source_dl = torchdata.DataLoader(self.source_ds, batch_size=source_amount, shuffle=True,
@@ -90,7 +92,7 @@ class Trainer(object):
                                                   drop_last=True)
         else:
             self.source_dl = None
-        wandb.log({'source amount': source_amount},step=self.step)
+        wandb.log({'source amount': source_amount}, step=self.step)
         self.target_dl = torchdata.DataLoader(self.target_ds, batch_size=self.cfg.batch_size - source_amount,
                                               shuffle=True, pin_memory=True,
                                               drop_last=True)
