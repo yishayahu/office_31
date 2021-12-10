@@ -2,7 +2,7 @@ steps_per_epoch: 250
 num_epochs: 25
 batch_size: 16
 model:
-  func: vgg16
+  func: resnet50
   pretrained: True
   as_class: True
 fc:
