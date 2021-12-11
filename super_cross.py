@@ -11,10 +11,10 @@ fix_seed()
 curr_device = 0
 pp = []
 
-exps = ['webcam_source.yml', 'webcam_target.yml',
+exps = ['webcam_source.yml','amazon_source.yml', 'webcam_target.yml',
         'webcam_target_base.yml', 'webcam_target_combined.yml',
-        'webcam_target_continue_optimizer_09.yml', 'webcam_target_keep_source.yml',
-        'amazon_source.yml', 'amazon_target.yml', 'amazon_target_base.yml',
+        'webcam_target_continue_optimizer_09.yml', 'webcam_target_keep_source.yml'
+        , 'amazon_target.yml', 'amazon_target_base.yml',
          'amazon_target_continue_optimizer_09.yml','amazon_target_combined.yml',
         'amazon_target_keep_source.yml']
 for config in exps:

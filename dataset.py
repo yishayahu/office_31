@@ -1,35 +1,53 @@
 import os
 
+import cv2
 from torchvision import datasets
 import torchvision.transforms as transforms
 
 import paths
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+
+
+def loader(p):
+    image = cv2.imread(p)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    return image
 
 
 def get_dataset(dataset_name, path=paths.data_path):
     if dataset_name in ['amazon', 'webcam']:  # OFFICE-31
-        data_transforms = {
-            'train': transforms.Compose([
-                transforms.Resize([256, 256]),
-                transforms.RandomCrop(224),
-                transforms.RandomHorizontalFlip(),
-                transforms.RandomVerticalFlip(),
-                transforms.RandomRotation(45),
-                transforms.ToTensor(),
-                transforms.ColorJitter(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-            ]),
-            'test': transforms.Compose([
-                transforms.Resize([224, 224]),
-                transforms.CenterCrop((224, 224)),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-            ]),
-        }
+        train_transform = A.Compose(
+            [
+                A.Resize(256, 256),
+                A.RandomCrop(224, 224),
+                A.HorizontalFlip(),
+                A.VerticalFlip(),
+                A.Rotate(45),
+                A.OneOf([A.ColorJitter(),
+                         A.RandomContrast(),
+                         A.Blur(), A.CLAHE(), A.RandomGamma(), A.ChannelShuffle()]),
+                A.CoarseDropout(),
 
-        source_train = datasets.ImageFolder(os.path.join(path, dataset_name, f'source_train'), data_transforms['train'])
-        target_train = datasets.ImageFolder(os.path.join(path, dataset_name, f'target_train'), data_transforms['train'])
-        test = datasets.ImageFolder(os.path.join(path, dataset_name, f'test'), data_transforms['test'])
+                A.Normalize(),
+                ToTensorV2()
+            ]
+        )
+        test_transform = A.Compose(
+            [
+                A.Resize(256, 256),
+                A.CenterCrop(224, 224),
+
+                A.Normalize(),
+                ToTensorV2(),
+            ]
+        )
+        source_train = datasets.ImageFolder(os.path.join(path, dataset_name, f'source_train'),
+                                            lambda x: train_transform(image=x), loader=loader)
+        target_train = datasets.ImageFolder(os.path.join(path, dataset_name, f'target_train'),
+                                            lambda x: train_transform(image=x), loader=loader)
+        test = datasets.ImageFolder(os.path.join(path, dataset_name, f'test'), lambda x: test_transform(image=x),
+                                    loader=loader)
 
 
 
