@@ -23,12 +23,12 @@ def get_dataset(dataset_name, path=paths.data_path):
                 A.RandomCrop(224, 224),
                 A.HorizontalFlip(),
                 A.VerticalFlip(),
-                A.Rotate(45),
+                A.ShiftScaleRotate(),
                 A.OneOf([A.ColorJitter(),
-                         A.RandomContrast(),
-                         A.Blur(), A.CLAHE(), A.RandomGamma(), A.ChannelShuffle()]),
-                A.CoarseDropout(),
-
+                         A.RandomBrightnessContrast(),
+                         A.Blur(), A.CLAHE(), A.RandomGamma(), A.ChannelShuffle(), A.HueSaturationValue(), A.RGBShift(),
+                         A.MedianBlur(), A.FancyPCA(), A.ChannelDropout()]),
+                A.OneOf([A.CoarseDropout(), A.GridDropout()]),
                 A.Normalize(),
                 ToTensorV2()
             ]
@@ -46,7 +46,8 @@ def get_dataset(dataset_name, path=paths.data_path):
                                             lambda x: train_transform(image=x)['image'], loader=loader)
         target_train = datasets.ImageFolder(os.path.join(path, dataset_name, f'target_train'),
                                             lambda x: train_transform(image=x)['image'], loader=loader)
-        test = datasets.ImageFolder(os.path.join(path, dataset_name, f'test'), lambda x: test_transform(image=x)['image'],
+        test = datasets.ImageFolder(os.path.join(path, dataset_name, f'test'),
+                                    lambda x: test_transform(image=x)['image'],
                                     loader=loader)
 
 
