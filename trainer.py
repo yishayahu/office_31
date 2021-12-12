@@ -68,7 +68,8 @@ class Trainer(object):
                 else:
                     param_group[1]['params'].append(v)
         self.model = self.model.to(device)
-        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum,lr=cfg.lr,weight_decay=getattr(cfg, 'weight_decay', 0.15))
+        self.optimizer = cfg.optimizer(param_group, momentum=cfg.momentum, lr=cfg.lr,
+                                       weight_decay=getattr(cfg, 'weight_decay', 0.15))
         continue_optimizer = getattr(cfg, 'continue_optimizer', False)
         if continue_optimizer:
             self.optimizer.load_state_dict(torch.load(os.path.join(paths.pretrained_models_path, cfg.base_optim_path)))
@@ -78,10 +79,10 @@ class Trainer(object):
         self.criterion = nn.CrossEntropyLoss()
 
     def create_data_loaders(self):
-        keep_source = getattr(self.cfg, 'keep_source', False)
+        keep_source = int(getattr(self.cfg, 'keep_source', 0))
         source_amount = int(self.cfg.batch_size * (1 - self.target_ratio))
-        if keep_source and source_amount < 1:
-            source_amount = 1
+
+        source_amount = max(keep_source, source_amount)
         if source_amount >= 1:
             self.source_dl = torchdata.DataLoader(self.source_ds, batch_size=source_amount, shuffle=True,
                                                   pin_memory=True,

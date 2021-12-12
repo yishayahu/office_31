@@ -27,8 +27,8 @@ def get_dataset(dataset_name, path=paths.data_path):
                 A.OneOf([A.ColorJitter(),
                          A.RandomBrightnessContrast(),
                          A.Blur(), A.CLAHE(), A.RandomGamma(), A.ChannelShuffle(), A.HueSaturationValue(), A.RGBShift(),
-                         A.MedianBlur(), A.FancyPCA(), A.ChannelDropout()]),
-                A.OneOf([A.CoarseDropout(), A.GridDropout()]),
+                         A.FancyPCA()]),
+                A.CoarseDropout(),
                 A.Normalize(),
                 ToTensorV2()
             ]
