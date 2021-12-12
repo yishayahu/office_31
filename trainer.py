@@ -99,7 +99,7 @@ class Trainer(object):
         accs = 0
         num_examples = 0
         for i, (inputs, labels) in bar:
-            inputs = inputs['image'].to(self.device)
+            inputs = inputs.to(self.device)
             labels = labels.to(self.device)
             num_examples += inputs.size(0)
             with torch.no_grad():
@@ -149,7 +149,7 @@ class Trainer(object):
 
             self.optimizer.zero_grad()
 
-            inputs = inputs['image'].to(self.device)
+            inputs = inputs.to(self.device)
             labels = labels.to(self.device)
             num_examples += inputs.size(0)
 
