@@ -43,9 +43,9 @@ def get_dataset(dataset_name, path=paths.data_path):
             ]
         )
         source_train = datasets.ImageFolder(os.path.join(path, dataset_name, f'source_train'),
-                                            lambda x: train_transform(image=x), loader=loader)
+                                            lambda x: train_transform(image=x)['image'], loader=loader)
         target_train = datasets.ImageFolder(os.path.join(path, dataset_name, f'target_train'),
-                                            lambda x: train_transform(image=x), loader=loader)
+                                            lambda x: train_transform(image=x)['image'], loader=loader)
         test = datasets.ImageFolder(os.path.join(path, dataset_name, f'test'), lambda x: test_transform(image=x)['image'],
                                     loader=loader)
 
