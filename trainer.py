@@ -173,11 +173,11 @@ class Trainer(object):
 
             if i % 10 == 9:
                 bar.set_description(
-                    f'train loss: {np.mean(losses)} train accuracy: {accs / num_examples} iter: {i} lr is {0}')
+                    f'train loss: {np.mean(losses)} train accuracy: {accs / num_examples} iter: {i} lr is {float(self.scheduler.get_last_lr()[0])}')
                 logs = {
                     f'train loss': float(np.mean(losses)),
                     f'train accuracy': float(accs / num_examples),
-                    f'lr': 0,
+                    f'lr': float(self.scheduler.get_last_lr()[0]),
                 }
                 wandb.log(logs, step=self.step)
         self.scheduler.step()
