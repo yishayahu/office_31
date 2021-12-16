@@ -3,7 +3,7 @@ num_epochs: 45
 batch_size: 16
 model:
   func: resnet50
-  pretrained: True
+  pretrained: False
   as_class: True
 fc:
   func: Linear
