@@ -1,9 +1,9 @@
 steps_per_epoch: 300
-num_epochs: 60
+num_epochs: 45
 batch_size: 16
 model:
   func: resnet50
-  pretrained: False
+  pretrained: True
   as_class: True
 fc:
   func: Linear

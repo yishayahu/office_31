@@ -67,13 +67,13 @@ def main(args=None):
         cfg.model.fc = cfg.fc
     if cfg.train_only_source:
         source_train, _, test = dataset.get_dataset(cfg.dataset_name)
-        t = trainer.Trainer(source_train, None, test, test, cfg, opts.device, opts.exp_name, project_name=f'office_31_')
+        t = trainer.Trainer(source_train, None, test, cfg, opts.device, opts.exp_name, project_name=f'office_31_')
         t.train()
     else:
 
         source_train, _, _ = dataset.get_dataset(cfg.dataset_source_name)
         _, target_train, test = dataset.get_dataset(cfg.dataset_target_name)
-        t = trainer.Trainer(source_train, target_train, test, test, cfg, opts.device, opts.exp_name,
+        t = trainer.Trainer(source_train, target_train, test, cfg, opts.device, opts.exp_name,
                             project_name=f'office_31_')
         t.train()
 

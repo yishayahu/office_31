@@ -4,5 +4,4 @@ train_only_target: False
 optimizer:
   func: SGD
 lr: 0.001
-head_lr: 0.001
 momentum: 0.0005

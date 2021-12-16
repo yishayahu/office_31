@@ -12,10 +12,7 @@ import paths
 
 
 class Trainer(object):
-    def __init__(self, source_ds, target_ds, val_ds, test_ds, cfg, device, exp_name, project_name):
-        print(f'source_ds len {len(source_ds)}')
-        print(f'val_ds len {len(val_ds)}')
-        print(f'test_ds len {len(test_ds)}')
+    def __init__(self, source_ds, target_ds, test_ds, cfg, device, exp_name, project_name):
         if target_ds:
             print(f'target_ds len {len(target_ds)}')
         self.ckpt_dir = os.path.join(paths.out_path, exp_name)
@@ -45,16 +42,13 @@ class Trainer(object):
         else:
             self.target_ratio = 0.05
             self.create_data_loaders()
-        self.val_dl = torchdata.DataLoader(val_ds, batch_size=cfg.batch_size, shuffle=True, pin_memory=True,
-                                           drop_last=False)
         self.test_dl = torchdata.DataLoader(test_ds, batch_size=cfg.batch_size, shuffle=True, pin_memory=True,
                                             drop_last=False)
         self.model = cfg.model
 
         if cfg.train_only_source:
             assert not getattr(cfg, 'continue_optimizer', False)
-            head_lr = getattr(cfg, 'head_lr', cfg.lr * 10)
-            param_group = [{'params': [], 'lr': cfg.lr}, {'params': [], 'lr': head_lr}]
+            param_group = [{'params': [], 'lr': cfg.lr}, {'params': [], 'lr': cfg.lr*10}]
             for k, v in self.model.named_parameters():
                 if not k.__contains__('fc'):
                     param_group[0]['params'].append(v)
@@ -78,7 +72,6 @@ class Trainer(object):
                 for i in range(len(self.optimizer.param_groups)):
                     self.optimizer.param_groups[i][k] = v
         self.criterion = nn.CrossEntropyLoss()
-        self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=20, gamma=0.1)
 
     def create_data_loaders(self):
         keep_source = int(getattr(self.cfg, 'keep_source', 0))
@@ -173,14 +166,13 @@ class Trainer(object):
 
             if i % 10 == 9:
                 bar.set_description(
-                    f'train loss: {np.mean(losses)} train accuracy: {accs / num_examples} iter: {i} lr is {float(self.scheduler.get_last_lr()[0])}')
+                    f'train loss: {np.mean(losses)} train accuracy: {accs / num_examples} iter: {i} lr is {0}')
                 logs = {
                     f'train loss': float(np.mean(losses)),
                     f'train accuracy': float(accs / num_examples),
-                    f'lr': float(self.scheduler.get_last_lr()[0]),
+                    f'lr': 0 ,
                 }
                 wandb.log(logs, step=self.step)
-        self.scheduler.step()
         return float(accs / num_examples)
 
     def save_all(self, best=''):
