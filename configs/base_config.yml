@@ -1,5 +1,5 @@
 steps_per_epoch: 300
-num_epochs: 45
+num_epochs: 60
 batch_size: 16
 model:
   func: resnet50
