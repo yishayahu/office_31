@@ -6,5 +6,5 @@ if sys.platform == 'win32':
     out_path = r'C:\Users\Y\PycharmProjects\domain_adaptation_out'
 else:
     data_path ='/home/dsi/shaya/domain_adaptation_images2/'
-    pretrained_models_path = '/home/dsi/shaya/domain_adaptation_images/outs/'
-    out_path ='/home/dsi/shaya/domain_adaptation_images/outs/'
+    pretrained_models_path = '/home/dsi/shaya/domain_adaptation_images2/outs/'
+    out_path ='/home/dsi/shaya/domain_adaptation_images2/outs/'
