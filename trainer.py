@@ -53,7 +53,8 @@ class Trainer(object):
 
         if cfg.train_only_source:
             assert not getattr(cfg, 'continue_optimizer', False)
-            param_group = [{'params': [], 'lr': cfg.lr}, {'params': [], 'lr': cfg.lr * 10}]
+            head_lr = getattr(cfg, 'head_lr', cfg.lr * 10)
+            param_group = [{'params': [], 'lr': cfg.lr}, {'params': [], 'lr': head_lr}]
             for k, v in self.model.named_parameters():
                 if not k.__contains__('fc'):
                     param_group[0]['params'].append(v)
@@ -77,6 +78,7 @@ class Trainer(object):
                 for i in range(len(self.optimizer.param_groups)):
                     self.optimizer.param_groups[i][k] = v
         self.criterion = nn.CrossEntropyLoss()
+        self.scheduler = torch.optim.lr_scheduler.StepLR(self.optimizer, step_size=20, gamma=0.1)
 
     def create_data_loaders(self):
         keep_source = int(getattr(self.cfg, 'keep_source', 0))
@@ -178,7 +180,7 @@ class Trainer(object):
                     f'lr': 0,
                 }
                 wandb.log(logs, step=self.step)
-
+        self.scheduler.step()
         return float(accs / num_examples)
 
     def save_all(self, best=''):
