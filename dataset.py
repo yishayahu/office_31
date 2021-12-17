@@ -52,14 +52,14 @@ def get_dataset(dataset_name,source_size,target_size, office_path=paths.data_pat
     target = do.from_folder_class_data(office_path / dataset_name / "images").named(
         "t_data", "t_label"
     )
-    source_train = source.shuffle(seed)
     if source_size != -1:
 
-        source_train = source.filter(
+        source_train = source.shuffle(seed).filter(
             s_label=do.allow_unique(num_source_per_class)
         )
     else:
         print('using all')
+        source_train = source.shuffle(seed)
 
     target_test, target_trainval = target.split(
         fractions=[0.3, 0.7], seed=test_split_seed  # hard-coded seed
