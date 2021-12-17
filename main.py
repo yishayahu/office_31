@@ -75,6 +75,7 @@ def main(args=None):
         t.train()
     else:
         cfg.base_model_path = cfg.base_model_path.replace('source',f'source_{opts.source_size}')
+        cfg.base_optim_path = cfg.base_optim_path.replace('source',f'source_{opts.source_size}')
         source_train, _, _ = dataset.get_dataset(cfg.dataset_source_name,opts.source_size,opts.target_size)
         _, target_train, test = dataset.get_dataset(cfg.dataset_target_name,opts.source_size,opts.target_size)
         t = trainer.Trainer(source_train, target_train, test, cfg, opts.device, opts.exp_name,
