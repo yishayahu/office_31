@@ -50,31 +50,35 @@ def fix_seed(seed=0xBadCafe):
 def main(args=None):
     cli = argparse.ArgumentParser()
     cli.add_argument("--exp_name", default='debug')
-    cli.add_argument("--config", default='configs/amazon_target.yml')
+    cli.add_argument("--config", default='configs/amazon_source.yml')
     cli.add_argument("--device", default='cuda:0')
+    cli.add_argument("--source_size", default=20,type=int)
+    cli.add_argument("--target_size", default=3,type=int)
     opts = cli.parse_args(args)
 
     fix_seed()
     cfg = yaml.safe_load(open(opts.config, 'r'))
 
     base_cfg = yaml.safe_load(open('configs/base_config.yml', 'r'))
-    cfg.update(base_cfg)
+    for k, v in base_cfg.items():
+        if k not in cfg:
+            cfg[k] = v
     cfg = Config(cfg)
     cfg.second_round()
     if 'VGG' in str(type(cfg.model)):
-        cfg.model.classifier[-1] = Linear(4096,31)
+        cfg.model.classifier[-1] = Linear(4096, 31)
     else:
         cfg.model.fc = cfg.fc
     if cfg.train_only_source:
-        source_train, _, test = dataset.get_dataset(cfg.dataset_name)
-        t = trainer.Trainer(source_train, None, test, cfg, opts.device, opts.exp_name, project_name=f'office_31_')
+        source_train, _, test = dataset.get_dataset(cfg.dataset_name,opts.source_size,opts.target_size)
+        t = trainer.Trainer(source_train, None, test, cfg, opts.device, opts.exp_name, project_name=f'office_31_{opts.source_size}')
         t.train()
     else:
 
-        source_train, _, _ = dataset.get_dataset(cfg.dataset_source_name)
-        _, target_train, test = dataset.get_dataset(cfg.dataset_target_name)
+        source_train, _, _ = dataset.get_dataset(cfg.dataset_source_name,opts.source_size,opts.target_size)
+        _, target_train, test = dataset.get_dataset(cfg.dataset_target_name,opts.source_size,opts.target_size)
         t = trainer.Trainer(source_train, target_train, test, cfg, opts.device, opts.exp_name,
-                            project_name=f'office_31_')
+                            project_name=f'office_31_{opts.source_size}')
         t.train()
 
 

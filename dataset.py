@@ -35,11 +35,11 @@ class OfficeDs(Dataset):
         return img, self.name_to_num[target]
 
 
-def get_dataset(dataset_name, office_path=paths.data_path, seed=1):
+def get_dataset(dataset_name,source_size,target_size, office_path=paths.data_path, seed=1):
     test_split_seed = 42  # hard-coded
 
-    num_source_per_class = 20 if dataset_name == "amazon" else 8
-    num_target_per_class = 3
+    num_source_per_class = source_size if dataset_name == "amazon" else source_size * 0.4
+    num_target_per_class = target_size
     office_path = Path(office_path)
     if not office_path.exists():
         download_and_extract_office31(office_path)
@@ -51,10 +51,11 @@ def get_dataset(dataset_name, office_path=paths.data_path, seed=1):
     target = do.from_folder_class_data(office_path / dataset_name / "images").named(
         "t_data", "t_label"
     )
-
-    source_train = source.shuffle(seed).filter(
-        s_label=do.allow_unique(num_source_per_class)
-    )
+    source_train = source.shuffle(seed)
+    if source_size != -1:
+        source_train = source.filter(
+            s_label=do.allow_unique(num_source_per_class)
+        )
 
     target_test, target_trainval = target.split(
         fractions=[0.3, 0.7], seed=test_split_seed  # hard-coded seed

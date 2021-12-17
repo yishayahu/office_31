@@ -13,6 +13,8 @@ import paths
 
 class Trainer(object):
     def __init__(self, source_ds, target_ds, test_ds, cfg, device, exp_name, project_name):
+        print(f"len source_ds is {source_ds}")
+        print(f"len test_ds is {test_ds}")
         if target_ds:
             print(f'target_ds len {len(target_ds)}')
         self.ckpt_dir = os.path.join(paths.out_path, exp_name)

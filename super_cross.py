@@ -18,29 +18,31 @@ exps = ['webcam_source.yml','amazon_source.yml', 'webcam_target.yml',
         , 'amazon_target.yml', 'amazon_target_base.yml',
          'amazon_target_continue_optimizer_09.yml','amazon_target_combined.yml',
         'amazon_target_keep_source.yml','amazon_target_combined_keep_source.yml']
-for config in exps:
-    exp_name = config.split('.')[0]
-    config = os.path.join('configs', config)
-    if exp_name == 'webcam_source' or exp_name == 'amazon_source':
-        if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}/model_final.pth')):
-            print('running source')
-            os.system(f'python main.py --exp_name {exp_name} --config {config}')
-        else:
-            continue
-    if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}/model_final.pth')):
-        if curr_device>3:
-            for p1 in tqdm(pp,desc='pp wait'):
-                p1.join()
-            curr_device = 0
-            pp = []
+for source_size in [20,-1]:
+    for target_size in [3,10]:
+        for i,config in enumerate(exps):
+            exp_name = config.split('.')[0]
+            config = os.path.join('configs', config)
+            if i < 2:
+                if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{source_size}/model_final.pth')):
+                    print('running source')
+                    os.system(f'python main.py --exp_name {exp_name}_{source_size} --config {config}  --source_size {source_size}')
+                else:
+                    continue
+            if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{source_size}_{target_size}/model_final.pth')):
+                if curr_device>7:
+                    for p1 in tqdm(pp,desc='pp wait'):
+                        p1.join()
+                    curr_device = 0
+                    pp = []
 
-        print(f'run training {exp_name} with config {config}')
-        cmd = f'python main.py --exp_name {exp_name} --config {config}  --device cuda:{curr_device}'
-        curr_device += 1
-        print(cmd)
-        p = Process(target=lambda cmd1: os.system(cmd1), args=(cmd,))
-        p.start()
-        time.sleep(4)
-        pp.append(p)
-    else:
-        print(f'skipping {exp_name}')
+                print(f'run training {exp_name}_{source_size}_{target_size} with config {config}')
+                cmd = f'python main.py --exp_name {exp_name}_{source_size}_{target_size} --config {config}  --device cuda:{curr_device} --source_size {source_size} --target_size {target_size}'
+                curr_device += 1
+                print(cmd)
+                p = Process(target=lambda cmd1: os.system(cmd1), args=(cmd,))
+                p.start()
+                time.sleep(4)
+                pp.append(p)
+            else:
+                print(f'skipping {exp_name}')
