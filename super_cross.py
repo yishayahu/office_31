@@ -25,7 +25,7 @@ for source_size in [20,-1]:
             config = os.path.join('configs', config)
             if i < 2:
                 if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{source_size}/model_final.pth')):
-                    print('running source')
+                    print(f'running source {exp_name}_{source_size}')
                     os.system(f'python main.py --exp_name {exp_name}_{source_size} --config {config}  --source_size {source_size}')
                 else:
                     continue
