@@ -39,7 +39,7 @@ def get_dataset(dataset_name,source_size,target_size, office_path=paths.data_pat
     test_split_seed = 42  # hard-coded
     source_size = int(source_size)
     target_size = int(target_size)
-    num_source_per_class = source_size if dataset_name == "amazon" else source_size * 0.4
+    num_source_per_class = source_size if dataset_name == "amazon" else int(source_size * 0.4)
     num_target_per_class = target_size
     office_path = Path(office_path)
     if not office_path.exists():
