@@ -37,7 +37,8 @@ class OfficeDs(Dataset):
 
 def get_dataset(dataset_name,source_size,target_size, office_path=paths.data_path, seed=1):
     test_split_seed = 42  # hard-coded
-
+    source_size = int(source_size)
+    target_size = int(target_size)
     num_source_per_class = source_size if dataset_name == "amazon" else source_size * 0.4
     num_target_per_class = target_size
     office_path = Path(office_path)
@@ -52,7 +53,8 @@ def get_dataset(dataset_name,source_size,target_size, office_path=paths.data_pat
         "t_data", "t_label"
     )
     source_train = source.shuffle(seed)
-    if source_size != -1:
+    if source_size == -1:
+        print('using all')
         source_train = source.filter(
             s_label=do.allow_unique(num_source_per_class)
         )
