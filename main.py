@@ -76,7 +76,7 @@ def main(args=None):
     else:
         cfg.model.fc = cfg.fc
     if cfg.train_only_source:
-        source_train, _, test = dataset.get_dataset(cfg.dataset_name,opts.source_size,opts.target_size)
+        source_train, _, test = dataset.get_dataset(cfg.dataset_source_name,opts.source_size,opts.target_size)
         t = trainer.Trainer(source_train, None, test, cfg, opts.device, opts.exp_name, project_name=f'office_31_{opts.source_size}')
         t.train()
     else:
