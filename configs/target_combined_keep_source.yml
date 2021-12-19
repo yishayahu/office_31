@@ -1,0 +1,9 @@
+train_only_source: False
+train_only_target: False
+continue_optimizer: True
+keep_source: 5
+optimizer:
+  func: SGD
+lr: 0.0001
+momentum: 0.3
+

@@ -54,6 +54,8 @@ def main(args=None):
     cli.add_argument("--device", default='cuda:0')
     cli.add_argument("--source_size", default=20,type=int)
     cli.add_argument("--target_size", default=3,type=int)
+    cli.add_argument("--source_ds")
+    cli.add_argument("--target_ds")
     opts = cli.parse_args(args)
 
     fix_seed()
@@ -63,6 +65,10 @@ def main(args=None):
     for k, v in base_cfg.items():
         if k not in cfg:
             cfg[k] = v
+    cfg['dataset_source_name'] = opts.source_ds
+    cfg['dataset_target_name'] = opts.target_ds
+    cfg['base_model_path'] = f'{opts.source_ds}_source_{opts.source_size}/model_final.pth'
+    cfg['base_optim_path'] = f'{opts.source_ds}_source_{opts.source_size}/optim_final.pth'
     cfg = Config(cfg)
     cfg.second_round()
     if 'VGG' in str(type(cfg.model)):
@@ -74,9 +80,6 @@ def main(args=None):
         t = trainer.Trainer(source_train, None, test, cfg, opts.device, opts.exp_name, project_name=f'office_31_{opts.source_size}')
         t.train()
     else:
-        cfg.base_model_path = cfg.base_model_path.replace('source',f'source_{opts.source_size}')
-        if getattr(cfg,'base_optim_path',None) is not None:
-            cfg.base_optim_path = cfg.base_optim_path.replace('source',f'source_{opts.source_size}')
         source_train, _, _ = dataset.get_dataset(cfg.dataset_source_name,opts.source_size,opts.target_size)
         _, target_train, test = dataset.get_dataset(cfg.dataset_target_name,opts.source_size,opts.target_size)
         t = trainer.Trainer(source_train, target_train, test, cfg, opts.device, opts.exp_name,
