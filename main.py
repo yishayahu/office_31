@@ -67,8 +67,8 @@ def main(args=None):
             cfg[k] = v
     cfg['dataset_source_name'] = opts.source_ds
     cfg['dataset_target_name'] = opts.target_ds
-    cfg['base_model_path'] = f'{opts.source_ds}_source_{opts.source_size}/model_final.pth'
-    cfg['base_optim_path'] = f'{opts.source_ds}_source_{opts.source_size}/optim_final.pth'
+    cfg['base_model_path'] = f'source_{opts.source_ds}_{opts.source_size}/model_final.pth'
+    cfg['base_optim_path'] = f'source_{opts.source_ds}_{opts.source_size}/optim_final.pth'
     cfg = Config(cfg)
     cfg.second_round()
     if 'VGG' in str(type(cfg.model)):
