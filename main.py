@@ -77,13 +77,13 @@ def main(args=None):
         cfg.model.fc = cfg.fc
     if cfg.train_only_source:
         source_train, _, test = dataset.get_dataset(cfg.dataset_source_name,opts.source_size,opts.target_size)
-        t = trainer.Trainer(source_train, None, test, cfg, opts.device, opts.exp_name, project_name=f'office_31___{opts.source_size}')# todo: remove
+        t = trainer.Trainer(source_train, None, test, cfg, opts.device, opts.exp_name, project_name=f'office_31_p_{opts.source_size}')
         t.train()
     else:
         source_train, _, _ = dataset.get_dataset(cfg.dataset_source_name,opts.source_size,opts.target_size)
         _, target_train, test = dataset.get_dataset(cfg.dataset_target_name,opts.source_size,opts.target_size)
         t = trainer.Trainer(source_train, target_train, test, cfg, opts.device, opts.exp_name,
-                            project_name=f'office_31___{opts.source_size}') #todo: remove
+                            project_name=f'office_31_p_{opts.source_size}')
         t.train()
 
 

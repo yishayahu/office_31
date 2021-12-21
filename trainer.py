@@ -22,6 +22,7 @@ class Trainer(object):
         Path(self.ckpt_dir).mkdir(parents=True, exist_ok=True)
         Path(self.res_dir).mkdir(parents=True, exist_ok=True)
         self.step = 0
+        self.epoch = 0
         wandb.init(
             project=project_name,
             id=wandb.util.generate_id(),
@@ -35,14 +36,11 @@ class Trainer(object):
             self.source_dl = torchdata.DataLoader(source_ds, batch_size=cfg.batch_size, shuffle=True, pin_memory=True,
                                                   drop_last=True)
             self.target_dl = None
-            self.target_ratio = 0
         elif cfg.train_only_target:
             self.source_dl = None
             self.target_dl = torchdata.DataLoader(target_ds, batch_size=cfg.batch_size, shuffle=True, pin_memory=True,
                                                   drop_last=True)
-            self.target_ratio = 1
         else:
-            self.target_ratio = 0.05
             self.create_data_loaders()
         self.test_dl = torchdata.DataLoader(test_ds, batch_size=cfg.batch_size, shuffle=True, pin_memory=True,
                                             drop_last=False)
@@ -76,20 +74,19 @@ class Trainer(object):
         self.criterion = nn.CrossEntropyLoss()
 
     def create_data_loaders(self):
-        keep_source = int(getattr(self.cfg, 'keep_source', 0))
-        source_amount = int(self.cfg.batch_size * (1 - self.target_ratio))
 
-        source_amount = max(keep_source, source_amount)
-        if source_amount >= 1:
-            self.source_dl = torchdata.DataLoader(self.source_ds, batch_size=source_amount, shuffle=True,
+        target_amount = min((self.epoch // (self.cfg.num_epochs // self.cfg.batch_size))+1,self.cfg.batch_size -1)
+        source_amount = self.cfg.batch_size - target_amount
+        assert source_amount >= 1
+
+        self.source_dl = torchdata.DataLoader(self.source_ds, batch_size=source_amount, shuffle=True,
                                                   pin_memory=True,
                                                   drop_last=True)
-        else:
-            self.source_dl = None
-        wandb.log({'source amount': source_amount}, step=self.step)
+
         self.target_dl = torchdata.DataLoader(self.target_ds, batch_size=self.cfg.batch_size - source_amount,
                                               shuffle=True, pin_memory=True,
                                               drop_last=True)
+        wandb.log({'source amount': source_amount}, step=self.step)
 
     def run_val(self, dl, val_or_test):
         self.model.eval()
@@ -186,16 +183,17 @@ class Trainer(object):
 
         num_epochs = self.cfg.num_epochs
         for epoch in range(num_epochs):
+
             print('Epoch {}/{}'.format(epoch, num_epochs - 1))
             print('-' * 10)
             self.run_train()
             self.save_all()
             if not self.cfg.train_only_source and not self.cfg.train_only_target:
-                self.target_ratio += 0.05
                 self.create_data_loaders()
             epoch_acc_val = self.run_val(self.test_dl, 'test')
             if epoch_acc_val > best_acc:
                 best_acc = epoch_acc_val
+            self.epoch+=1
                 # self.save_all(best='best')
         # self.run_val(self.test_dl, 'test')
         self.save_all(best='_final')

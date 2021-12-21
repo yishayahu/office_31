@@ -12,10 +12,8 @@ fix_seed()
 curr_device = 0
 pp = []
 
-exps = ['source.yml','target.yml',
-        'target_base.yml', 'target_combined.yml',
-        'target_continue_optimizer_09.yml', 'target_keep_source.yml',
-        'target_combined_keep_source.yml']
+exps = ['source.yml','target_base.yml', 'g_da_paper.yml',
+        'target_combined_paper.yml', 'target_continue_optimizer_paper.yml',]
 datasets = ['amazon', 'webcam', 'dslr']
 for source_size in [20]:
     for target_size in [3]:
@@ -25,8 +23,6 @@ for source_size in [20]:
                 exp_name = exp_name + f'_{source_ds}'
                 config = os.path.join('configs', config)
                 if i < 1:
-                    if source_ds != 'dslr': # todo: remove
-                        continue
                     if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{source_size}/model_final.pth')):
                         print(f'running source {exp_name}_{source_size}')
                         os.system(
@@ -34,8 +30,6 @@ for source_size in [20]:
                     else:
                         continue
                 exp_name = exp_name + f'_{target_ds}'
-                if target_ds != 'dslr': # todo: remove
-                    continue
                 if not os.path.exists(
                         os.path.join(paths.out_path, f'{exp_name}_{source_size}_{target_size}/model_final.pth')):
                     if curr_device > 7:
