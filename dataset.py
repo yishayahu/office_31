@@ -93,6 +93,19 @@ def get_dataset(dataset_name,source_size,target_size, office_path=paths.data_pat
             ToTensorV2(),
         ]
     )
+    if dataset_name == 'dslr':
+        print('dslr no aug')
+        train_transform = A.Compose(
+            [
+                A.Resize(256, 256),
+                A.RandomCrop(224, 224),
+                A.HorizontalFlip(),
+                A.VerticalFlip(),
+                A.CoarseDropout(),
+                A.Normalize(),
+                ToTensorV2()
+            ]
+        )
     source_train = OfficeDs(transform=train_transform, inner_ds=source_train)
     target_train = OfficeDs(transform=train_transform, inner_ds=target_train)
     test = OfficeDs(transform=test_transform, inner_ds=target_test)

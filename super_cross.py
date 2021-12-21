@@ -25,6 +25,8 @@ for source_size in [20]:
                 exp_name = exp_name + f'_{source_ds}'
                 config = os.path.join('configs', config)
                 if i < 1:
+                    if source_ds != 'dslr': # todo: remove
+                        continue
                     if not os.path.exists(os.path.join(paths.out_path, f'{exp_name}_{source_size}/model_final.pth')):
                         print(f'running source {exp_name}_{source_size}')
                         os.system(
@@ -32,6 +34,8 @@ for source_size in [20]:
                     else:
                         continue
                 exp_name = exp_name + f'_{target_ds}'
+                if target_ds != 'dslr': # todo: remove
+                    continue
                 if not os.path.exists(
                         os.path.join(paths.out_path, f'{exp_name}_{source_size}_{target_size}/model_final.pth')):
                     if curr_device > 7:
