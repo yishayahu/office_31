@@ -4,4 +4,4 @@ continue_optimizer: True
 optimizer:
   func: SGD
 lr: 0.0001
-momentum: 0.99
+momentum: 0.3
