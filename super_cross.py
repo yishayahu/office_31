@@ -9,10 +9,10 @@ import paths
 from main import fix_seed
 
 fix_seed()
-curr_device = 4
+curr_device = 0
 pp = []
 
-exps = ['source.yml','target_base.yml', 'g_da_paper.yml',
+exps = ['source.yml','target_base.yml', 'g_da_paper.yml','ftf.yml',
         'target_combined_paper.yml', 'target_continue_optimizer_paper.yml',]
 datasets = ['amazon', 'webcam', 'dslr']
 for source_size in [20]:
@@ -32,10 +32,10 @@ for source_size in [20]:
                 exp_name = exp_name + f'_{target_ds}'
                 if not os.path.exists(
                         os.path.join(paths.out_path, f'{exp_name}_{source_size}_{target_size}/model_final.pth')):
-                    if curr_device > 5:
+                    if curr_device > 3:
                         for p1 in tqdm(pp, desc='pp wait'):
                             p1.join()
-                        curr_device = 4
+                        curr_device = 0
                         pp = []
 
                     print(f'run training {exp_name}_{source_size}_{target_size} with config {config}')

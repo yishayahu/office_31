@@ -45,6 +45,8 @@ class Trainer(object):
         self.test_dl = torchdata.DataLoader(test_ds, batch_size=cfg.batch_size, shuffle=True, pin_memory=True,
                                             drop_last=False)
         self.model = cfg.model
+        if getattr(cfg, 'freeze_func', False):
+            cfg.freeze_func(self.model)
 
         if cfg.train_only_source:
             assert not getattr(cfg, 'continue_optimizer', False)

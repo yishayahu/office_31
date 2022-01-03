@@ -12,7 +12,7 @@ import trainer
 from torch.optim import *
 from torchvision.models import *
 from torch.nn import Linear
-
+from utils import freeze_model
 
 class Config:
     def parse(self, raw):
@@ -74,7 +74,7 @@ def main(args=None):
     if 'VGG' in str(type(cfg.model)):
         cfg.model.classifier[-1] = Linear(4096, 31)
     else:
-        cfg.model.fc = cfg.fc
+        cfg.model.fc = Linear(2048,5)
     if cfg.train_only_source:
         source_train, _, test = dataset.get_dataset(cfg.dataset_source_name,opts.source_size,opts.target_size)
         t = trainer.Trainer(source_train, None, test, cfg, opts.device, opts.exp_name, project_name=f'office_31_p_{opts.source_size}')
