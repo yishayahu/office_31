@@ -1,8 +1,11 @@
+spottune: True
 train_only_source: False
 train_only_target: True
 optimizer:
   func: Adam
 lr: 0.0001
+lr_agent: 0.01
 
-
-
+model:
+  func: StDenseNet
+  as_class: True

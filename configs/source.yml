@@ -1,8 +1,7 @@
 train_only_source: True
 train_only_target: False
-steps_per_epoch: 200
-num_epochs: 20
+steps_per_epoch: 500
+num_epochs: 5
 optimizer:
-  func: SGD
+  func: Adam
 lr: 0.0001
-momentum: 0.0005
