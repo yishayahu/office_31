@@ -1,12 +1,7 @@
-steps_per_epoch: 300
-num_epochs: 45
-batch_size: 16
+steps_per_epoch: 150
+num_epochs: 16
+batch_size: 32
 model:
-  func: resnet50
-  pretrained: True
-  as_class: True
-fc:
-  func: Linear
-  in_features: 2048
-  out_features: 31
+  func: DenseNet121
+  out_size: 28
   as_class: True
