@@ -1,4 +1,4 @@
-steps_per_epoch: 70
+steps_per_epoch: 150
 num_epochs: 16
 batch_size: 32
 model:

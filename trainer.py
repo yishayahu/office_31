@@ -36,8 +36,9 @@ class Trainer(object):
         self.device = device
         self.source_ds = source_ds
         self.target_ds = target_ds
+
         self.cfg = cfg
-        self.spottune = cfg.spottune
+        self.spottune = getattr(cfg, 'spottune', False)
         n_workers = 1
         if cfg.train_only_source:
             self.source_dl = torchdata.DataLoader(source_ds, batch_size=cfg.batch_size, shuffle=True, pin_memory=True,
@@ -77,10 +78,16 @@ class Trainer(object):
 
 
         self.model = self.model.to(device)
+        self.alpha = getattr(cfg, 'alpha', None)
         if self.spottune:
             self.agent = agent_net.resnet(self.model.num_layers_to_policy *2)
             self.agent_optimizer = optim.Adam(self.agent.parameters(), lr= cfg.lr_agent, weight_decay= 0.001)
-            self.agent.to(device)
+            self.agent = self.agent.to(device)
+        if self.alpha is not None:
+            self.base_model = cfg.base_model
+            self.base_model.load_state_dict(torch.load(os.path.join(paths.pretrained_models_path, cfg.base_model_path),map_location='cpu'))
+            self.base_model = self.base_model.to(device)
+
         # if getattr(cfg, 'freeze_func', False):
         #     cfg.freeze_func(self.model)
         self.optimizer =cfg.optimizer(param_group, lr=cfg.lr, weight_decay=1e-5,betas=getattr(cfg, 'betas', (0.9,0.999)))
@@ -173,6 +180,7 @@ class Trainer(object):
 
     def run_train(self):
         losses = []
+        l2sp_loss = []
         num_examples = 0
         self.model.train()  # Set model to training mode
         if self.spottune:
@@ -206,7 +214,12 @@ class Trainer(object):
                         outs.append(outputs[jj][:14])
                 outputs = torch.stack(outs,dim=0)
                 loss = self.criterion(outputs, labels)
-
+                if self.alpha is not  None:
+                    w_diff = torch.tensor(0., requires_grad=True, dtype=torch.float32,device=self.device)
+                    for p1, p2 in zip(self.model.parameters(), self.base_model.parameters()):
+                        w_diff = w_diff + torch.sum((p1 - p2) ** 2)
+                    l2sp_loss.append(float(w_diff *self.alpha))
+                    loss = loss + w_diff *self.alpha
                 loss.backward()
 
                 self.optimizer.step()
@@ -225,6 +238,8 @@ class Trainer(object):
                     f'train loss': float(np.mean(losses)),
                     f'lr': 0 ,
                 }
+                if l2sp_loss:
+                    logs['l2sp_loss'] = float(np.mean(l2sp_loss))
                 wandb.log(logs, step=self.step)
         return 0
 

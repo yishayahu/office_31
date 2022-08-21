@@ -52,7 +52,7 @@ def fix_seed(seed=0xBadCafe):
 def main(args=None):
     cli = argparse.ArgumentParser()
     cli.add_argument("--exp_name", default='debug')
-    cli.add_argument("--config", default='configs/spottune.yml')
+    cli.add_argument("--config", default='configs/l2sp.yml')
     cli.add_argument("--device", default='cuda:0')
     cli.add_argument("--target_size", default=10,type=int)
     cli.add_argument("--source_ds", default='chexpert')

@@ -13,7 +13,7 @@ from wandb.vendor.pynvml.pynvml import nvmlDeviceGetCount, nvmlDeviceGetHandleBy
     nvmlDeviceGetUtilizationRates, nvmlInit
 def find_available_device(my_devices,pp):
     if torch.cuda.is_available():
-        wanted_free_mem = 18 * 2 ** 30
+        wanted_free_mem = 12 * 2 ** 30
         while True:
             for device_num in range(nvmlDeviceGetCount()):
                 if device_num in my_devices:
@@ -21,7 +21,7 @@ def find_available_device(my_devices,pp):
                 h = nvmlDeviceGetHandleByIndex(device_num)
                 info = nvmlDeviceGetMemoryInfo(h)
                 gpu_utilize = nvmlDeviceGetUtilizationRates(h)
-                if info.free > wanted_free_mem and gpu_utilize.gpu < 3:
+                if info.free > wanted_free_mem:
                     return device_num
             time.sleep(10)
             for p1,d in pp:
@@ -38,8 +38,10 @@ def super_cross():
     pp = []
     my_devices = []
     # exps = ['target_base.yml','ftf.yml', 'g_da_paper.yml','target_continue_optimizer_paper.yml']
-    exps = ['spottune.yml']
+    # exps = ['l2sp.yml']
     # exps = ['ftf.yml']
+    # exps = ['spottune.yml']
+    exps = ['g_da_paper_l2sp.yml']
     datasets = ['chexpert', 'cxr14']
 
     for target_size in [128,256,512,1024]:
